@@ -1,15 +1,14 @@
 package com.shishakalex.anagram;
 
+import org.junit.jupiter.api.Test;
 
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.junit.Assert.assertEquals;
-
-public class AnagramCreatorTest {
-    private static  AnagramCreator anagramCreator;
+class AnagramCreatorTest {
+    private final AnagramCreator anagramCreator = new AnagramCreator();
 
     private static final String TEST_NULL_STRING = null;
     private static final String TEST_EMPTY_STRING = "";
@@ -30,113 +29,108 @@ public class AnagramCreatorTest {
     private static final String TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_NON_LETTER_SYMBOLS = "!@# &^% (*";
     private static final String TEST_WORD_STRING_WITH_THREE_WORDS_DIFFERENT_SYMBOLS = "a!?bcde hi*j klmn@op";
 
-    @BeforeClass
-    public static void makeAnagramCreator(){
-        anagramCreator = new AnagramCreator();
-    }
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void makeAnagramTakesNullShouldThrowIllegalArgumentException() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Sentence is null");
+    void makeAnagramTakesNullShouldThrowIllegalArgumentException() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> anagramCreator.makeAnagram(TEST_NULL_STRING),
+                "Must throw IllegalArgumentException on null string");
 
-        anagramCreator.makeAnagram(TEST_NULL_STRING);
+        assertEquals("Sentence is null", thrown.getMessage());
     }
 
     @Test
-    public void makeAnagramTakesEmptyStringShouldThrowIllegalArgumentException(){
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Sentence is empty");
+    void makeAnagramTakesEmptyStringShouldThrowIllegalArgumentException(){
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> anagramCreator.makeAnagram(TEST_EMPTY_STRING),
+                "Must throw IllegalArgumentException on empty string");
 
-        anagramCreator.makeAnagram(TEST_EMPTY_STRING);
+        assertEquals("Sentence is empty", thrown.getMessage());
     }
 
     @Test
-    public void makeAnagramTakesSpacesTabsStringShouldThrowIllegalArgumentException(){
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Sentence contains only whitespaces/tabs");
+    void makeAnagramTakesSpacesTabsStringShouldThrowIllegalArgumentException(){
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> anagramCreator.makeAnagram(TEST_BLANK_STRING),
+                "Must throw IllegalArgumentException on spaced/tabbed string");
 
-        anagramCreator.makeAnagram(TEST_BLANK_STRING);
-
+        assertEquals("Sentence contains only whitespaces/tabs", thrown.getMessage());
     }
 
     @Test
-    public void makeAnagramTakesThreeWordsShouldCorrectlyReverse(){
-        assertEquals("e!?dcba ji*h ponm@lk",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_DIFFERENT_SYMBOLS));
+    void makeAnagramTakesThreeWordsShouldCorrectlyReverse(){
+        assertThat("e!?dcba ji*h ponm@lk",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_DIFFERENT_SYMBOLS)));
+        }
+
+    @Test
+    void makeAnagramTakesThreeWordsOnlyNonLetterSymbolShouldCorrectlyReverse(){
+        assertThat(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_NON_LETTER_SYMBOLS,
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_NON_LETTER_SYMBOLS)));
+        }
+
+    @Test
+    void makeAnagramTakesThreeWordsOnlyLetterSymbolShouldCorrectlyReverse(){
+        assertThat("gfedcba jih ponmlk",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_LETTER_SYMBOLS)));
     }
 
     @Test
-    public void makeAnagramTakesThreeWordsOnlyNonLetterSymbolShouldCorrectlyReverse(){
-        assertEquals(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_NON_LETTER_SYMBOLS,
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_NON_LETTER_SYMBOLS));
+    void makeAnagramTakesOneWordDifferentLetterSymbolUpperLowerCasesShouldCorrectlyReverse(){
+        assertThat("GfEdcbAa",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_LETTER_SYMBOLS_UPPER_AND_LOWER_CASES)));
     }
 
     @Test
-    public void makeAnagramTakesThreeWordsOnlyLetterSymbolShouldCorrectlyReverse(){
-        assertEquals("gfedcba jih ponmlk",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_THREE_WORDS_ONLY_LETTER_SYMBOLS));
+    void makeAnagramTakesOneWordDifferentNonLetterSymbolShouldCorrectlyReverse(){
+        assertThat("c!№b?a",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_NON_LETTER_SYMBOLS)));
+        }
+
+    @Test
+    void makeAnagramTakesOneWordDifferentLetterSymbolShouldCorrectlyReverse(){
+        assertThat("gfedcba",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_LETTER_SYMBOLS)));
     }
 
     @Test
-    public void makeAnagramTakesOneWordDifferentLetterSymbolUpperLowerCasesShouldCorrectlyReverse(){
-        assertEquals("GfEdcbAa",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_LETTER_SYMBOLS_UPPER_AND_LOWER_CASES));
-    }
+    void makeAnagramTakesOneWordSameNonLetterSymbolShouldCorrectlyReverse(){
+        assertThat(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_NON_LETTER_SYMBOLS,
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_NON_LETTER_SYMBOLS)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordDifferentNonLetterSymbolShouldCorrectlyReverse(){
-        assertEquals("c!№b?a",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_NON_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesOneWordOneNonLetterSymbolShouldCorrectlyReverse(){
+        assertThat("ssa?aa",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_NON_LETTER_SYMBOLS)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordDifferentLetterSymbolShouldCorrectlyReverse(){
-        assertEquals("gfedcba",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_DIFFERENT_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesOneWordOneLetterSymbolShouldCorrectlyReverse(){
+        assertThat(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_LETTER_SYMBOLS,
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_LETTER_SYMBOLS)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordSameNonLetterSymbolShouldCorrectlyReverse(){
-        assertEquals(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_NON_LETTER_SYMBOLS,
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_NON_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesOneWordSameLetterSymbolShouldCorrectlyReverse(){
+        assertThat(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_LETTER_SYMBOLS,
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_LETTER_SYMBOLS)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordOneNonLetterSymbolShouldCorrectlyReverse(){
-        assertEquals("ssa?aa",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_NON_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesDigitsShouldStaySamePositions(){
+        assertThat(TEST_DIGIT_STRING,
+                is(anagramCreator.makeAnagram(TEST_DIGIT_STRING)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordOneLetterSymbolShouldCorrectlyReverse(){
-        assertEquals(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_LETTER_SYMBOLS,
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_ONE_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesStringShouldReverseIt(){
+        assertThat("cba gfed",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_NO_NON_LETTER_SYMBOLS)));
+        }
 
     @Test
-    public void makeAnagramTakesOneWordSameLetterSymbolShouldCorrectlyReverse(){
-        assertEquals(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_LETTER_SYMBOLS,
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_ONE_WORD_AND_SAME_LETTER_SYMBOLS));
-    }
-
-    @Test
-    public void makeAnagramTakesDigitsShouldStaySamePositions(){
-        assertEquals(TEST_DIGIT_STRING, anagramCreator.makeAnagram(TEST_DIGIT_STRING));
-    }
-
-    @Test
-    public void makeAnagramTakesStringShouldReverseIt(){
-        assertEquals("cba gfed",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_NO_NON_LETTER_SYMBOLS));
-    }
-
-    @Test
-    public void makeAnagramTakesStringWithNonLetterSymbolsShouldReverseIt(){
-        assertEquals("d1cba hgf!e",
-                anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_NON_LETTER_SYMBOLS));
-    }
+    void makeAnagramTakesStringWithNonLetterSymbolsShouldReverseIt(){
+        assertThat("d1cba hgf!e",
+                is(anagramCreator.makeAnagram(TEST_WORD_STRING_WITH_NON_LETTER_SYMBOLS)));
+        }
 }

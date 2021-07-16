@@ -31,7 +31,8 @@ public class AnagramCreator {
     private String reverseWord(String word){
         char[] symbols = word.toCharArray();
 
-        int rightPointer = symbols.length - 1, leftPointer = 0;
+        int rightPointer = symbols.length - 1;
+        int leftPointer = 0;
         while (leftPointer < rightPointer){
             if (!Character.isAlphabetic(symbols[leftPointer])) {
                 leftPointer++;
