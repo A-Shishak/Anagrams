@@ -1,2 +1,3 @@
-# Task 1 - Anagrams
+# Anagrams
+Makes anagram from string saving non-letter positions
 
